@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BD World — Tech · Trust · Solution</title>
+<meta name="description" content="BD World — IT accessories & solutions in Chattogram. Browse laptops, networking gear, CCTV, printers, gaming accessories and IT support." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Sora', sans-serif; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  ::-webkit-scrollbar { display: none; }
+  .brand-reflect {
+    -webkit-box-reflect: below 2px linear-gradient(transparent 40%, rgba(255,255,255,0.15));
+  }
+  select option { background: #101827; color: #F5F7FA; }
+</style>
+</head>
+<body class="min-h-screen bg-[#0B1220] text-[#F5F7FA]">
+
+  <!-- Top accent bar -->
+  <div class="h-1 w-full bg-gradient-to-r from-[#E63946] via-[#2ECC71] to-[#2E86FF]"></div>
+
+  <!-- Utility bar -->
+  <div class="hidden sm:block bg-white/[0.03] border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-5 py-1.5 flex items-center justify-between text-[11px] text-[#8B95A5]">
+      <span>🚚 Free delivery inside Chattogram city</span>
+      <span>💳 Call for bulk / corporate pricing</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-white/10 sticky top-0 z-30 bg-[#0B1220]/95 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-baseline gap-2">
+        <span class="brand-reflect font-display font-bold text-3xl sm:text-4xl tracking-tight">
+          <span class="text-[#E63946]">BD</span>
+          <span class="text-[#2E86FF]">WORLD</span>
+        </span>
+        <button id="brandInfoBtn" class="hidden sm:inline text-[10px] uppercase tracking-widest text-[#8B95A5] hover:text-white transition underline decoration-dotted underline-offset-4">Tech · Trust · Solution</button>
+      </div>
+      <div class="relative w-full max-w-md hidden sm:block" id="searchWrap">
+        <input id="searchInput" type="text" placeholder="Search products, e.g. router, toner, keyboard..."
+          class="w-full bg-white/5 border border-white/10 rounded-full pl-9 pr-4 py-2 text-sm outline-none focus:border-[#2E86FF] focus:ring-1 focus:ring-[#2E86FF] transition" />
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[#8B95A5]">🔍</span>
+      </div>
+      <nav class="flex items-center gap-2 shrink-0">
+        <button id="tabShopBtn" class="text-sm px-4 py-2 rounded-full border transition"></button>
+        <button id="tabDashBtn" class="text-sm px-4 py-2 rounded-full border transition"></button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ======================= SHOP VIEW ======================= -->
+  <div id="shopView">
+    <!-- Banner -->
+    <section class="max-w-6xl mx-auto px-5 pt-6">
+      <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent p-8 sm:p-10">
+        <p class="relative text-xs uppercase tracking-[0.2em] text-[#2ECC71] font-semibold mb-3">IT Accessories & Solutions · Halishahar, Chattogram</p>
+        <h1 class="relative font-display text-2xl sm:text-4xl font-bold leading-tight max-w-xl">Everything for your setup — browse, compare, order.</h1>
+        <p class="relative mt-3 text-[#8B95A5] max-w-lg text-sm">Laptops, networking gear, CCTV, printers, gaming accessories and IT support, all with real prices.</p>
+      </div>
+    </section>
+
+    <!-- Mobile search -->
+    <section class="max-w-6xl mx-auto px-5 pt-4 sm:hidden">
+      <div class="relative">
+        <input id="searchInputMobile" type="text" placeholder="Search products..."
+          class="w-full bg-white/5 border border-white/10 rounded-full pl-9 pr-4 py-2 text-sm outline-none focus:border-[#2E86FF]" />
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[#8B95A5]">🔍</span>
+      </div>
+    </section>
+
+    <!-- Owner profile strip -->
+    <section class="max-w-6xl mx-auto px-5 pt-6">
+      <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5 flex flex-col lg:flex-row gap-6">
+
+        <div class="flex-1 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+          <img src="assets/owner.webp" alt="Mosharraf Hossain Murad" class="w-20 h-20 rounded-full object-cover shrink-0 border-2 border-white/20" />
+          <div class="flex-1 text-center sm:text-left">
+            <h3 class="font-display font-bold text-lg">Mosharraf Hossain Murad</h3>
+            <p class="text-sm text-[#2ECC71] mb-3">Founder &amp; IT Engineer</p>
+            <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-sm">
+              <a href="tel:01824539680" class="flex items-center gap-1.5 text-[#C7CDD9] hover:text-white transition">📞 01824-539680</a>
+              <a href="https://wa.me/8801521486882" target="_blank" class="flex items-center gap-1.5 text-[#C7CDD9] hover:text-white transition">🟢 WhatsApp: 01521-486882</a>
+              <a href="mailto:mosharrafhossain012@gmail.com" class="flex items-center gap-1.5 text-[#C7CDD9] hover:text-white transition">✉️ mosharrafhossain012@gmail.com</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="shrink-0 lg:w-64">
+          <img src="assets/business-card.png" alt="BD World visiting card" class="w-full rounded-lg border border-white/10" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Shop layout -->
+    <section class="max-w-6xl mx-auto px-5 pt-6 pb-20 flex flex-col lg:flex-row gap-6">
+      <!-- Sidebar -->
+      <aside class="lg:w-56 shrink-0">
+        <p class="text-[11px] uppercase tracking-widest text-[#8B95A5] mb-2 px-1">Categories</p>
+        <nav id="categoryNav" class="flex lg:flex-col gap-1.5 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0"></nav>
+      </aside>
+
+      <!-- Product grid -->
+      <div class="flex-1">
+        <div class="flex items-baseline justify-between mb-4">
+          <h2 id="activeCatLabel" class="font-display font-semibold text-lg">All Products</h2>
+          <span id="itemCount" class="text-xs text-[#8B95A5]"></span>
+        </div>
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+        <div id="emptyState" class="hidden text-center py-20 text-[#8B95A5]">
+          <p class="text-lg">No products match your search.</p>
+          <p class="text-sm mt-1">Try a different search or category.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10">
+      <div class="max-w-6xl mx-auto px-5 py-10 grid sm:grid-cols-3 gap-6 text-sm text-[#C7CDD9]">
+        <div class="flex items-center gap-2">📞 01824-539680</div>
+        <div class="flex items-center gap-2">✉️ mosharrafhossain012@gmail.com</div>
+        <div class="flex items-center gap-2">📍 Green View, Road 09, Halishahar, Chattogram</div>
+      </div>
+      <p class="text-center text-xs text-[#8B95A5] pb-8">© BD World. Sample catalog for demonstration.</p>
+    </footer>
+  </div>
+
+  <!-- ======================= DASHBOARD VIEW ======================= -->
+  <div id="dashboardView" class="hidden max-w-6xl mx-auto px-5 pt-8 pb-20">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="font-display font-bold text-2xl">Owner Dashboard</h1>
+        <p class="text-sm text-[#8B95A5]">A quick look at your catalog and incoming order requests.</p>
+      </div>
+    </div>
+
+    <!-- Stat tiles -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="rounded-xl p-5 bg-gradient-to-br from-[#2E86FF] to-[#2E86FF]/60">
+        <p class="text-3xl font-display font-bold" id="statProducts">0</p>
+        <p class="text-sm text-white/80">Total Products</p>
+      </div>
+      <div class="rounded-xl p-5 bg-gradient-to-br from-[#2ECC71] to-[#2ECC71]/60">
+        <p class="text-3xl font-display font-bold" id="statCategories">0</p>
+        <p class="text-sm text-white/80">Categories</p>
+      </div>
+      <div class="rounded-xl p-5 bg-gradient-to-br from-[#E63946] to-[#E63946]/60">
+        <p class="text-3xl font-display font-bold" id="statOrders">0</p>
+        <p class="text-sm text-white/80">Order Requests (this visit)</p>
+      </div>
+      <div class="rounded-xl p-5 bg-gradient-to-br from-purple-500 to-purple-500/60">
+        <p class="text-3xl font-display font-bold" id="statAvgPrice">৳0</p>
+        <p class="text-sm text-white/80">Average Product Price</p>
+      </div>
+    </div>
+
+    <!-- Category breakdown -->
+    <div class="rounded-xl border border-white/10 bg-white/[0.03] p-5 mb-6">
+      <h3 class="font-display font-semibold mb-4">Products per Category</h3>
+      <div id="categoryBars" class="space-y-3"></div>
+    </div>
+
+    <!-- Recent orders -->
+    <div class="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+      <h3 class="font-display font-semibold mb-4">Recent Order Requests</h3>
+      <div id="ordersList" class="text-sm text-[#8B95A5]">No order requests yet this visit — submit one from the Shop tab to see it appear here.</div>
+    </div>
+
+    <p class="text-xs text-[#8B95A5] mt-6">
+      Note: this dashboard reflects only what happens in your current browser session (it resets on refresh). To keep real order history permanently, you'd need a backend/database later on.
+    </p>
+  </div>
+
+  <!-- Brand meaning modal -->
+  <div id="brandModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-2xl bg-[#101827] border border-white/10 p-6 relative" onclick="event.stopPropagation()">
+      <button onclick="closeBrandModal()" class="absolute top-4 right-4 text-[#8B95A5] hover:text-white">✕</button>
+      <h3 class="font-display font-bold text-lg mb-4">What "Tech · Trust · Solution" means</h3>
+      <div class="space-y-4 text-sm">
+        <div class="rounded-lg bg-white/[0.03] border border-white/10 p-4">
+          <p class="font-semibold text-[#E63946] mb-1">TECH</p>
+          <p class="text-[#C7CDD9]">We keep up with the latest laptops, networking gear, and IT equipment so you always have access to current, reliable technology — not outdated stock.</p>
+        </div>
+        <div class="rounded-lg bg-white/[0.03] border border-white/10 p-4">
+          <p class="font-semibold text-[#2ECC71] mb-1">TRUST</p>
+          <p class="text-[#C7CDD9]">Every product comes with honest pricing, genuine specifications, and warranty support where applicable — no hidden costs, no misleading claims.</p>
+        </div>
+        <div class="rounded-lg bg-white/[0.03] border border-white/10 p-4">
+          <p class="font-semibold text-[#2E86FF] mb-1">SOLUTION</p>
+          <p class="text-[#C7CDD9]">We don't just sell products — we help you set them up, troubleshoot issues, and support you afterward, whether it's a single laptop or a full office network.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order modal -->
+  <div id="orderModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 items-center justify-center p-4">
+    <div id="modalBox" class="w-full max-w-sm rounded-2xl bg-[#101827] border border-white/10 p-6 relative">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-[#8B95A5] hover:text-white">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+<script>
+  const CATEGORIES = [
+    { id: "laptop", label: "Laptop & Desktop", emoji: "💻", color: "from-[#2E86FF]/30 to-[#2E86FF]/5" },
+    { id: "network", label: "Networking", emoji: "📶", color: "from-[#2ECC71]/30 to-[#2ECC71]/5" },
+    { id: "cctv", label: "CCTV & Security", emoji: "🛡️", color: "from-[#E63946]/30 to-[#E63946]/5" },
+    { id: "printer", label: "Printer & Toner", emoji: "🖨️", color: "from-purple-500/30 to-purple-500/5" },
+    { id: "gaming", label: "Gaming Accessories", emoji: "🎮", color: "from-orange-500/30 to-orange-500/5" },
+    { id: "storage", label: "Storage & Pendrive", emoji: "💾", color: "from-yellow-500/30 to-yellow-500/5" },
+    { id: "support", label: "IT Support", emoji: "🎧", color: "from-cyan-500/30 to-cyan-500/5" },
+  ];
+
+  // ---- EDIT YOUR PRODUCTS HERE ----
+  // To add a real photo for a product, add: image: "assets/product-name.jpg"
+  // "details" shows in the full spec popup when someone clicks the product card.
+  const PRODUCTS = [
+    { id: "p1", cat: "laptop", name: "Dell Vostro 3520 Laptop", spec: "i5 12th Gen · 8GB · 512GB SSD", price: 62500, image: null, details: {
+      "Brand": "Dell", "Processor": "Intel Core i5-1235U (12th Gen)", "RAM": "8GB DDR4", "Storage": "512GB SSD",
+      "Display": "15.6\" FHD", "Charger": "65W Type-C", "Graphics": "Intel Iris Xe (integrated)", "OS": "Windows 11", "Warranty": "1 Year Dell"
+    }},
+    { id: "p2", cat: "laptop", name: "HP 24-inch Desktop Set", spec: "i3 12th Gen · 8GB · 1TB HDD · Monitor", price: 45000, image: null, details: {
+      "Brand": "HP", "Processor": "Intel Core i3-12100", "RAM": "8GB DDR4", "Storage": "1TB HDD",
+      "Monitor": "24\" FHD included", "Power Supply": "250W", "Graphics": "Intel UHD 730 (integrated)", "OS": "Windows 11", "Warranty": "1 Year HP"
+    }},
+    { id: "p3", cat: "laptop", name: "Lenovo IdeaPad Slim 3", spec: "Ryzen 5 · 16GB · 512GB SSD", price: 58000, image: null, details: {
+      "Brand": "Lenovo", "Processor": "AMD Ryzen 5 7530U", "RAM": "16GB DDR4", "Storage": "512GB SSD",
+      "Display": "15.6\" FHD", "Charger": "65W", "Graphics": "AMD Radeon (integrated)", "OS": "Windows 11", "Warranty": "1 Year Lenovo"
+    }},
+    { id: "p15", cat: "laptop", name: "Asus Vivobook 15", spec: "i5 13th Gen · 8GB · 512GB SSD", price: 64500, image: null, details: {
+      "Brand": "Asus", "Processor": "Intel Core i5-1334U (13th Gen)", "RAM": "8GB DDR4", "Storage": "512GB SSD",
+      "Display": "15.6\" FHD", "Charger": "65W Type-C", "Graphics": "Intel Iris Xe (integrated)", "OS": "Windows 11", "Warranty": "2 Years Asus"
+    }},
+
+    { id: "p4", cat: "network", name: "TP-Link Archer AX23", spec: "WiFi 6 Dual Band Router", price: 5200, image: null, details: {
+      "Brand": "TP-Link", "Standard": "WiFi 6 (802.11ax)", "Bands": "Dual Band AX1800", "LAN Ports": "4x Gigabit",
+      "Antennas": "4 external", "Power": "12V adapter", "Warranty": "2 Years"
+    }},
+    { id: "p16", cat: "network", name: "Cosco CR-N300 Router", spec: "WiFi N300 Single Band Router", price: 1750, image: null, details: {
+      "Brand": "Cosco", "Standard": "WiFi N (802.11n)", "Bands": "Single Band 2.4GHz, up to 300Mbps", "LAN Ports": "4x 10/100",
+      "Antennas": "2 external", "Power": "9V adapter", "Warranty": "1 Year"
+    }},
+    { id: "p5", cat: "network", name: "24-Port Gigabit Switch", spec: "Unmanaged, Rack Mountable", price: 8900, image: null, details: {
+      "Brand": "TP-Link", "Ports": "24x Gigabit RJ45", "Type": "Unmanaged, plug and play", "Mounting": "19\" Rack mountable",
+      "Power": "External adapter", "Warranty": "2 Years"
+    }},
+    { id: "p17", cat: "network", name: "BDCOM 8-Port Switch", spec: "Unmanaged Desktop Switch", price: 2500, image: null, details: {
+      "Brand": "BDCOM", "Ports": "8x Gigabit RJ45", "Type": "Unmanaged desktop switch", "Mounting": "Desktop / wall",
+      "Power": "External adapter", "Warranty": "1 Year"
+    }},
+    { id: "p6", cat: "network", name: "Cat6 Cable (305m box)", spec: "Indoor, Solid Copper", price: 4500, image: null, details: {
+      "Brand": "Generic / Local", "Type": "Cat6 UTP, solid copper", "Length": "305 meters (1 box)", "Use": "Indoor networking",
+      "Warranty": "N/A"
+    }},
+
+    { id: "p7", cat: "cctv", name: "Hikvision 4-Camera Kit", spec: "2MP · Night Vision · 1TB DVR", price: 21000, image: null, details: {
+      "Brand": "Hikvision", "Resolution": "2MP (1080p)", "Channels": "4 cameras + DVR", "Storage": "1TB DVR included",
+      "Night Vision": "up to 20m IR", "Power": "12V DC per camera", "Warranty": "1 Year"
+    }},
+    { id: "p8", cat: "cctv", name: "Dahua IP Dome Camera", spec: "4MP · PoE · Weatherproof", price: 4300, image: null, details: {
+      "Brand": "Dahua", "Resolution": "4MP", "Type": "IP camera, PoE powered", "Weatherproof": "IP67 outdoor rated",
+      "Night Vision": "up to 30m IR", "Warranty": "2 Years"
+    }},
+    { id: "p18", cat: "cctv", name: "CP Plus Analog Camera", spec: "5MP · Night Vision", price: 3800, image: null, details: {
+      "Brand": "CP Plus", "Resolution": "5MP", "Type": "Analog (HDCVI)", "Night Vision": "up to 25m IR",
+      "Power": "12V DC", "Warranty": "1 Year"
+    }},
+
+    { id: "p9", cat: "printer", name: "Canon PIXMA G2020", spec: "Ink Tank · Print/Scan/Copy", price: 13500, image: null, details: {
+      "Brand": "Canon", "Type": "Ink Tank (refillable)", "Functions": "Print / Scan / Copy", "Print Speed": "~8.8 ipm (mono)",
+      "Connectivity": "USB", "Warranty": "1 Year (2 Years on print head)"
+    }},
+    { id: "p10", cat: "printer", name: "HP LaserJet Toner (85A)", spec: "Original Black Cartridge", price: 3200, image: null, details: {
+      "Brand": "HP", "Type": "Original toner cartridge", "Page Yield": "~1,600 pages", "Compatible With": "HP LaserJet P1102 / M1132 series",
+      "Warranty": "N/A"
+    }},
+    { id: "p19", cat: "printer", name: "Epson L3210", spec: "Ink Tank · Print/Scan/Copy", price: 15500, image: null, details: {
+      "Brand": "Epson", "Type": "Ink Tank (refillable)", "Functions": "Print / Scan / Copy", "Connectivity": "USB",
+      "Warranty": "2 Years"
+    }},
+
+    { id: "p11", cat: "gaming", name: "Redragon K552 Keyboard", spec: "Mechanical · RGB Backlit", price: 3400, image: null, details: {
+      "Brand": "Redragon", "Type": "Mechanical keyboard", "Switches": "Blue / Red (choose on order)", "Backlight": "RGB",
+      "Connectivity": "USB wired", "Warranty": "1 Year"
+    }},
+    { id: "p12", cat: "gaming", name: "Logitech G102 Mouse", spec: "RGB · 8000 DPI", price: 1450, image: null, details: {
+      "Brand": "Logitech", "DPI": "Up to 8000", "Buttons": "6 programmable", "Connectivity": "USB wired", "Warranty": "1 Year"
+    }},
+    { id: "p20", cat: "gaming", name: "Fantech MH85 Headset", spec: "Over-ear · Noise-cancel Mic", price: 1900, image: null, details: {
+      "Brand": "Fantech", "Type": "Over-ear gaming headset", "Microphone": "Noise-cancelling, detachable", "Connectivity": "3.5mm / USB",
+      "Warranty": "1 Year"
+    }},
+
+    { id: "p21", cat: "storage", name: "Pendrive 32GB", spec: "USB 3.0 Flash Drive", price: 650, image: null, details: {
+      "Brand": "Kingston / Sandisk (stock varies)", "Capacity": "32GB", "Interface": "USB 3.0", "Read Speed": "~100MB/s", "Warranty": "5 Years"
+    }},
+    { id: "p22", cat: "storage", name: "Pendrive 64GB", spec: "USB 3.0 Flash Drive", price: 950, image: null, details: {
+      "Brand": "Kingston / Sandisk (stock varies)", "Capacity": "64GB", "Interface": "USB 3.0", "Read Speed": "~100MB/s", "Warranty": "5 Years"
+    }},
+    { id: "p23", cat: "storage", name: "External HDD 1TB", spec: "USB 3.0 Portable Hard Drive", price: 5200, image: null, details: {
+      "Brand": "Toshiba / Seagate (stock varies)", "Capacity": "1TB", "Interface": "USB 3.0", "Type": "2.5\" portable", "Warranty": "3 Years"
+    }},
+
+    { id: "p13", cat: "support", name: "PC Troubleshooting Visit", spec: "On-site diagnosis, per visit", price: 500, image: null, details: {
+      "Service Type": "On-site visit", "Covers": "Hardware/software diagnosis", "Duration": "Usually within 1 hour", "Warranty": "N/A"
+    }},
+    { id: "p14", cat: "support", name: "Network Setup Service", spec: "Home/Office, incl. config", price: 2000, image: null, details: {
+      "Service Type": "On-site installation", "Covers": "Router/switch setup, WiFi configuration, cabling", "Warranty": "30 days service guarantee"
+    }},
+  ];
+  // ---- END PRODUCTS ----
+
+  let activeCat = "all";
+  let query = "";
+  let activeTab = "shop";
+  const orderRequests = []; // holds { name, phone, items, payment, total, time } submitted this session
+
+  // Change this passcode any time — it's just a casual gate, not real security (see note above).
+  const OWNER_PASSCODE = "bdworld2026";
+  let dashboardUnlocked = false;
+
+  function formatBDT(n) { return "৳" + n.toLocaleString("en-BD"); }
+  function catInfo(id) { return CATEGORIES.find(c => c.id === id); }
+  function catLabel(id) { return catInfo(id)?.label || ""; }
+
+  // ---------- TAB SWITCHING ----------
+  function setTab(tab) {
+    activeTab = tab;
+    document.getElementById("shopView").classList.toggle("hidden", tab !== "shop");
+    document.getElementById("dashboardView").classList.toggle("hidden", tab !== "dashboard");
+
+    const shopBtn = document.getElementById("tabShopBtn");
+    const dashBtn = document.getElementById("tabDashBtn");
+    shopBtn.textContent = "🛍️ Shop";
+    dashBtn.textContent = "📊 Dashboard";
+    shopBtn.className = "text-sm px-4 py-2 rounded-full border transition " + (tab === "shop" ? "bg-[#F5F7FA] text-[#0B1220] border-[#F5F7FA]" : "border-white/15 text-[#C7CDD9] hover:border-white/30");
+    dashBtn.className = "text-sm px-4 py-2 rounded-full border transition " + (tab === "dashboard" ? "bg-[#F5F7FA] text-[#0B1220] border-[#F5F7FA]" : "border-white/15 text-[#C7CDD9] hover:border-white/30");
+
+    if (tab === "dashboard") renderDashboard();
+  }
+  document.getElementById("tabShopBtn").onclick = () => setTab("shop");
+  document.getElementById("tabDashBtn").onclick = () => {
+    // NOTE: this is a simple front-end passcode, not real security — anyone who views
+    // the page source can find OWNER_PASSCODE below. Change it any time you like.
+    // For real login security you'd eventually need a backend/server.
+    if (dashboardUnlocked) { setTab("dashboard"); return; }
+    const entered = prompt("Enter owner passcode to view the Dashboard:");
+    if (entered === OWNER_PASSCODE) {
+      dashboardUnlocked = true;
+      setTab("dashboard");
+    } else if (entered !== null) {
+      alert("Incorrect passcode.");
+    }
+  };
+
+  // ---------- SHOP RENDERING ----------
+  function renderCategoryNav() {
+    const nav = document.getElementById("categoryNav");
+    nav.innerHTML = "";
+    const allBtn = document.createElement("button");
+    allBtn.textContent = "All Products";
+    allBtn.className = "shrink-0 text-left px-3 py-2 rounded-lg text-sm transition " + (activeCat === "all" ? "bg-white/10 text-white" : "text-[#C7CDD9] hover:bg-white/5");
+    allBtn.onclick = () => { activeCat = "all"; renderShop(); };
+    nav.appendChild(allBtn);
+
+    CATEGORIES.forEach(c => {
+      const btn = document.createElement("button");
+      btn.innerHTML = `${c.emoji} ${c.label}`;
+      btn.className = "shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition whitespace-nowrap " + (activeCat === c.id ? "bg-white/10 text-white" : "text-[#C7CDD9] hover:bg-white/5");
+      btn.onclick = () => { activeCat = c.id; renderShop(); };
+      nav.appendChild(btn);
+    });
+  }
+
+  function productImageHTML(p) {
+    const c = catInfo(p.cat);
+    if (p.image) {
+      return `<img src="${p.image}" alt="${p.name}" class="w-full h-32 object-cover rounded-lg mb-3" />`;
+    }
+    return `<div class="w-full h-32 rounded-lg mb-3 flex items-center justify-center text-4xl bg-gradient-to-br ${c.color} border border-white/10">${c.emoji}</div>`;
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById("productGrid");
+    const empty = document.getElementById("emptyState");
+    const filtered = PRODUCTS.filter(p => {
+      const matchesCat = activeCat === "all" || p.cat === activeCat;
+      const q = query.trim().toLowerCase();
+      const matchesQuery = q === "" || p.name.toLowerCase().includes(q) || p.spec.toLowerCase().includes(q);
+      return matchesCat && matchesQuery;
+    });
+
+    document.getElementById("itemCount").textContent = filtered.length + " items";
+    document.getElementById("activeCatLabel").textContent = activeCat === "all" ? "All Products" : catLabel(activeCat);
+
+    grid.innerHTML = "";
+    if (filtered.length === 0) {
+      empty.classList.remove("hidden");
+      return;
+    }
+    empty.classList.add("hidden");
+
+    filtered.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "group relative rounded-xl border border-white/10 bg-white/[0.03] p-4 hover:border-white/20 transition cursor-pointer";
+      card.innerHTML = `
+        ${productImageHTML(p)}
+        <p class="text-[10px] uppercase tracking-widest text-[#8B95A5] mb-1">${catLabel(p.cat)}</p>
+        <h3 class="font-semibold leading-snug">${p.name}</h3>
+        <p class="text-sm text-[#8B95A5] mt-1">${p.spec}</p>
+        <div class="mt-4 flex items-center justify-between">
+          <span class="font-mono text-[#2ECC71] text-lg">${formatBDT(p.price)}</span>
+          <button class="text-sm px-3 py-1.5 rounded-lg bg-[#2E86FF] text-white hover:bg-[#2E86FF]/85 transition order-btn">Order</button>
+        </div>
+        <p class="text-[11px] text-[#8B95A5] mt-2 text-center opacity-0 group-hover:opacity-100 transition">Tap card for full details</p>
+      `;
+      card.querySelector(".order-btn").onclick = (e) => { e.stopPropagation(); openModal(p); };
+      card.onclick = () => openProductDetails(p);
+      grid.appendChild(card);
+    });
+  }
+
+  function renderShop() { renderCategoryNav(); renderGrid(); }
+
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    query = e.target.value;
+    document.getElementById("searchInputMobile").value = e.target.value;
+    renderGrid();
+  });
+  document.getElementById("searchInputMobile").addEventListener("input", (e) => {
+    query = e.target.value;
+    document.getElementById("searchInput").value = e.target.value;
+    renderGrid();
+  });
+
+  // ---------- PRODUCT DETAILS MODAL ----------
+  function openProductDetails(product) {
+    const modal = document.getElementById("orderModal");
+    const content = document.getElementById("modalContent");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    const others = PRODUCTS.filter(p => p.cat === product.cat && p.id !== product.id);
+
+    content.innerHTML = `
+      <p class="text-[10px] uppercase tracking-widest text-[#8B95A5] mb-1">${catLabel(product.cat)}</p>
+      <h3 class="font-display font-bold text-lg mb-1">${product.name}</h3>
+      <p class="font-mono text-[#2ECC71] text-lg mb-4">${formatBDT(product.price)}</p>
+
+      <div class="rounded-lg border border-white/10 divide-y divide-white/10 mb-4">
+        ${Object.entries(product.details || {}).map(([k, v]) => `
+          <div class="flex items-center justify-between px-3 py-2 text-sm">
+            <span class="text-[#8B95A5]">${k}</span>
+            <span class="text-right">${v}</span>
+          </div>
+        `).join("")}
+      </div>
+
+      ${others.length > 0 ? `
+        <p class="text-xs uppercase tracking-widest text-[#8B95A5] mb-2">Other options in ${catLabel(product.cat)}</p>
+        <div class="space-y-1.5 mb-4 max-h-40 overflow-y-auto">
+          ${others.map(o => `
+            <button data-view="${o.id}" class="view-other-btn w-full flex items-center justify-between text-sm bg-white/5 hover:bg-white/10 transition rounded-lg px-3 py-2">
+              <span>${o.name}</span>
+              <span class="font-mono text-[#2ECC71]">${formatBDT(o.price)}</span>
+            </button>
+          `).join("")}
+        </div>
+      ` : ""}
+
+      <button id="orderFromDetailsBtn" class="w-full bg-[#2E86FF] hover:bg-[#2E86FF]/85 transition rounded-lg py-2.5 text-sm font-semibold">Order This</button>
+    `;
+
+    content.querySelectorAll(".view-other-btn").forEach(btn => {
+      btn.onclick = () => {
+        const other = PRODUCTS.find(p => p.id === btn.getAttribute("data-view"));
+        if (other) openProductDetails(other);
+      };
+    });
+    document.getElementById("orderFromDetailsBtn").onclick = () => openModal(product);
+  }
+
+  // ---------- BRAND INFO MODAL (Tech / Trust / Solution) ----------
+  function openBrandInfo() {
+    const modal = document.getElementById("orderModal");
+    const content = document.getElementById("modalContent");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    content.innerHTML = `
+      <h3 class="font-display font-bold text-lg mb-4">What "Tech · Trust · Solution" means</h3>
+      <div class="space-y-4">
+        <div>
+          <p class="font-semibold text-[#2E86FF] mb-1">💻 Tech</p>
+          <p class="text-sm text-[#C7CDD9]">We keep our catalog current with genuine, up-to-date IT products — laptops, networking gear, security cameras and more — so you always get equipment that fits today's needs.</p>
+        </div>
+        <div>
+          <p class="font-semibold text-[#2ECC71] mb-1">🛡️ Trust</p>
+          <p class="text-sm text-[#C7CDD9]">Every product comes from verified brands with clear warranty terms and honest, upfront pricing — no hidden charges, no surprises after you order.</p>
+        </div>
+        <div>
+          <p class="font-semibold text-[#E63946] mb-1">🔧 Solution</p>
+          <p class="text-sm text-[#C7CDD9]">We don't just sell products — we help set them up. From network installation to on-site troubleshooting, we support you before and after the purchase.</p>
+        </div>
+      </div>
+      <button onclick="closeModal()" class="w-full mt-6 text-sm px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 transition">Close</button>
+    `;
+  }
+  document.getElementById("brandInfoBtn").onclick = openBrandInfo;
+
+  // ---------- BRAND INFO MODAL ----------
+  document.getElementById("brandInfoBtn").onclick = () => {
+    const modal = document.getElementById("brandModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  };
+  function closeBrandModal() {
+    const modal = document.getElementById("brandModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  }
+  document.getElementById("brandModal").addEventListener("click", closeBrandModal);
+
+  // ---------- ORDER MODAL ----------
+  let currentItems = [];
+
+  function openModal(product) {
+    currentItems = [product];
+    const modal = document.getElementById("orderModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    renderOrderForm();
+  }
+
+  function itemsTotal() {
+    return currentItems.reduce((sum, it) => sum + it.price, 0);
+  }
+
+  function addExtraItem(productId) {
+    if (!productId) return;
+    const p = PRODUCTS.find(x => x.id === productId);
+    if (p && !currentItems.some(it => it.id === p.id)) {
+      currentItems.push(p);
+    }
+    renderOrderForm();
+  }
+
+  function removeItem(productId) {
+    currentItems = currentItems.filter(it => it.id !== productId);
+    if (currentItems.length === 0) { closeModal(); return; }
+    renderOrderForm();
+  }
+
+  function renderOrderForm() {
+    const content = document.getElementById("modalContent");
+    const addableProducts = PRODUCTS.filter(p => !currentItems.some(it => it.id === p.id));
+
+    content.innerHTML = `
+      <p class="text-xs uppercase tracking-widest text-[#8B95A5] mb-3">Order request</p>
+
+      <div class="space-y-2 mb-3">
+        ${currentItems.map(it => `
+          <div class="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
+            <div>
+              <p class="text-sm font-semibold">${it.name}</p>
+              <p class="text-xs font-mono text-[#2ECC71]">${formatBDT(it.price)}</p>
+            </div>
+            <button data-remove="${it.id}" class="text-[#8B95A5] hover:text-white text-sm remove-item-btn">✕</button>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="flex items-center gap-2 mb-4">
+        <select id="extraItemSelect" class="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-2 text-sm outline-none focus:border-[#2E86FF]">
+          <option value="">+ Add another item (e.g. pendrive)...</option>
+          ${addableProducts.map(p => `<option value="${p.id}">${p.name} — ${formatBDT(p.price)}</option>`).join("")}
+        </select>
+        <button id="addItemBtn" class="text-sm px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 transition">Add</button>
+      </div>
+
+      <div class="flex items-center justify-between mb-4 pt-2 border-t border-white/10">
+        <span class="text-sm text-[#8B95A5]">Total</span>
+        <span class="font-mono text-[#2ECC71] text-lg">${formatBDT(itemsTotal())}</span>
+      </div>
+
+      <form id="orderForm" class="space-y-3">
+        <div>
+          <label class="text-xs text-[#8B95A5] block mb-1">Your name</label>
+          <input required id="custName" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#2E86FF]" placeholder="Full name" />
+        </div>
+        <div>
+          <label class="text-xs text-[#8B95A5] block mb-1">Phone number</label>
+          <input required id="custPhone" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#2E86FF]" placeholder="01XXXXXXXXX" />
+        </div>
+        <div>
+          <label class="text-xs text-[#8B95A5] block mb-1">Payment method</label>
+          <select id="custPayment" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#2E86FF]">
+            <option value="Cash on Delivery">Cash on Delivery</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="bKash">bKash</option>
+            <option value="Nagad">Nagad</option>
+            <option value="Card (Visa/MasterCard)">Card (Visa/MasterCard) — payment link sent separately</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full mt-2 bg-[#2E86FF] hover:bg-[#2E86FF]/85 transition rounded-lg py-2.5 text-sm font-semibold">Submit order request</button>
+        <a href="tel:01824539680" class="w-full flex items-center justify-center gap-2 border border-white/15 rounded-lg py-2.5 text-sm text-[#C7CDD9] hover:border-white/30 transition">📞 Or call to order directly</a>
+      </form>
+    `;
+
+    content.querySelectorAll(".remove-item-btn").forEach(btn => {
+      btn.onclick = () => removeItem(btn.getAttribute("data-remove"));
+    });
+    document.getElementById("addItemBtn").onclick = () => {
+      const sel = document.getElementById("extraItemSelect");
+      addExtraItem(sel.value);
+    };
+
+    document.getElementById("orderForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("custName").value;
+      const phone = document.getElementById("custPhone").value;
+      const payment = document.getElementById("custPayment").value;
+      const itemNames = currentItems.map(it => it.name);
+      const total = itemsTotal();
+      orderRequests.unshift({ name, phone, payment, items: itemNames, total, time: new Date().toLocaleTimeString() });
+
+      const itemsLines = currentItems.map(it => `${it.name} (${formatBDT(it.price)})`).join("%0A- ");
+      const orderText = `New order from BD World website:%0A- ${itemsLines}%0ATotal: ${encodeURIComponent(formatBDT(total))}%0APayment: ${encodeURIComponent(payment)}%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}`;
+      const waLink = `https://wa.me/8801521486882?text=${orderText}`;
+      const mailSubject = encodeURIComponent(`New order (${currentItems.length} item${currentItems.length > 1 ? "s" : ""})`);
+      const mailBody = encodeURIComponent(`Items:\n- ${currentItems.map(it => `${it.name} (${formatBDT(it.price)})`).join("\n- ")}\n\nTotal: ${formatBDT(total)}\nPayment method: ${payment}\nName: ${name}\nPhone: ${phone}`);
+      const mailLink = `mailto:mosharrafhossain012@gmail.com?subject=${mailSubject}&body=${mailBody}`;
+
+      content.innerHTML = `
+        <div class="py-6 text-center">
+          <p class="text-3xl mb-3">✅</p>
+          <h3 class="font-semibold text-lg mb-1">Almost done!</h3>
+          <p class="text-sm text-[#8B95A5] mb-5">Tap a button below to send your order — it'll open with the details already filled in, just hit send.</p>
+          <div class="space-y-2">
+            <a href="${waLink}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#25D366]/85 transition rounded-lg py-2.5 text-sm font-semibold text-[#0B1220]">🟢 Send via WhatsApp</a>
+            <a href="${mailLink}" class="w-full flex items-center justify-center gap-2 border border-white/15 rounded-lg py-2.5 text-sm text-[#C7CDD9] hover:border-white/30 transition">✉️ Send via Email</a>
+          </div>
+          <button onclick="closeModal()" class="mt-5 text-sm px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 transition">Close</button>
+        </div>
+      `;
+    });
+  }
+
+  function closeModal() {
+    const modal = document.getElementById("orderModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  }
+  document.getElementById("orderModal").addEventListener("click", (e) => {
+    if (e.target.id === "orderModal") closeModal();
+  });
+
+  // ---------- DASHBOARD RENDERING ----------
+  function renderDashboard() {
+    document.getElementById("statProducts").textContent = PRODUCTS.length;
+    document.getElementById("statCategories").textContent = CATEGORIES.length;
+    document.getElementById("statOrders").textContent = orderRequests.length;
+    const avg = PRODUCTS.reduce((sum, p) => sum + p.price, 0) / PRODUCTS.length;
+    document.getElementById("statAvgPrice").textContent = formatBDT(Math.round(avg));
+
+    const barsWrap = document.getElementById("categoryBars");
+    barsWrap.innerHTML = "";
+    const maxCount = Math.max(...CATEGORIES.map(c => PRODUCTS.filter(p => p.cat === c.id).length), 1);
+    CATEGORIES.forEach(c => {
+      const catProducts = PRODUCTS.filter(p => p.cat === c.id);
+      const count = catProducts.length;
+      const pct = Math.round((count / maxCount) * 100);
+      const row = document.createElement("div");
+      row.innerHTML = `
+        <button class="w-full text-left cat-row-btn" data-cat="${c.id}">
+          <div class="flex items-center justify-between text-sm mb-1">
+            <span>${c.emoji} ${c.label} <span class="text-[#8B95A5]">▾</span></span>
+            <span class="text-[#8B95A5]">${count}</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-white/5">
+            <div class="h-2 rounded-full bg-gradient-to-r from-[#E63946] via-[#2ECC71] to-[#2E86FF]" style="width:${pct}%"></div>
+          </div>
+        </button>
+        <div class="cat-detail hidden mt-2 mb-1 rounded-lg bg-white/[0.03] border border-white/10 divide-y divide-white/10">
+          ${catProducts.map(p => `
+            <div class="flex items-center justify-between px-3 py-2 text-sm">
+              <div>
+                <p>${p.name}</p>
+                <p class="text-xs text-[#8B95A5]">${p.spec}</p>
+              </div>
+              <span class="font-mono text-[#2ECC71]">${formatBDT(p.price)}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+      barsWrap.appendChild(row);
+      row.querySelector(".cat-row-btn").onclick = () => {
+        row.querySelector(".cat-detail").classList.toggle("hidden");
+      };
+    });
+
+    const ordersList = document.getElementById("ordersList");
+    if (orderRequests.length === 0) {
+      ordersList.textContent = "No order requests yet this visit — submit one from the Shop tab to see it appear here.";
+    } else {
+      ordersList.innerHTML = `
+        <table class="w-full text-sm">
+          <thead class="text-[#8B95A5] text-xs uppercase tracking-wide">
+            <tr><th class="text-left pb-2">Time</th><th class="text-left pb-2">Name</th><th class="text-left pb-2">Phone</th><th class="text-left pb-2">Items</th><th class="text-left pb-2">Payment</th><th class="text-left pb-2">Total</th></tr>
+          </thead>
+          <tbody>
+            ${orderRequests.map(o => `
+              <tr class="border-t border-white/10 align-top">
+                <td class="py-2 text-[#8B95A5] whitespace-nowrap">${o.time}</td>
+                <td class="py-2">${o.name}</td>
+                <td class="py-2">${o.phone}</td>
+                <td class="py-2">${o.items.join(", ")}</td>
+                <td class="py-2 text-[#8B95A5] whitespace-nowrap">${o.payment || "-"}</td>
+                <td class="py-2 font-mono text-[#2ECC71] whitespace-nowrap">${formatBDT(o.total)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+  }
+
+  // ---------- INIT ----------
+  setTab("shop");
+  renderShop();
+</script>
+</body>
+</html>

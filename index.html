@@ -206,7 +206,7 @@
 
   <!-- Order modal -->
   <div id="orderModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 items-center justify-center p-4">
-    <div id="modalBox" class="w-full max-w-sm rounded-2xl bg-[#101827] border border-white/10 p-6 relative">
+    <div id="modalBox" class="w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-2xl bg-[#101827] border border-white/10 p-6 relative">
       <button onclick="closeModal()" class="absolute top-4 right-4 text-[#8B95A5] hover:text-white">✕</button>
       <div id="modalContent"></div>
     </div>
@@ -400,19 +400,7 @@ const FIREBASE_CONFIG = {
     if (tab === "dashboard") renderDashboard();
   }
   document.getElementById("tabShopBtn").onclick = () => setTab("shop");
-  document.getElementById("tabDashBtn").onclick = () => {
-    // NOTE: this is a simple front-end passcode, not real security — anyone who views
-    // the page source can find OWNER_PASSCODE below. Change it any time you like.
-    // For real login security you'd eventually need a backend/server.
-    if (dashboardUnlocked) { setTab("dashboard"); return; }
-    const entered = prompt("Enter owner passcode to view the Dashboard:");
-    if (entered === OWNER_PASSCODE) {
-      dashboardUnlocked = true;
-      setTab("dashboard");
-    } else if (entered !== null) {
-      alert("Incorrect passcode.");
-    }
-  };
+  document.getElementById("tabDashBtn").onclick = () => setTab("dashboard");
 
   // ---------- SHOP RENDERING ----------
   function renderCategoryNav() {
@@ -618,9 +606,12 @@ const FIREBASE_CONFIG = {
     const addableProducts = PRODUCTS.filter(p => !currentItems.some(it => it.id === p.id));
 
     content.innerHTML = `
-      <p class="text-xs uppercase tracking-widest text-[#8B95A5] mb-3">Order request</p>
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-xs uppercase tracking-widest text-[#8B95A5]">Order request</p>
+        ${currentItems.length > 2 ? `<button id="scrollTopBtn" class="text-xs px-2 py-1 rounded-lg bg-white/10 hover:bg-white/15 transition">▲ Top</button>` : ""}
+      </div>
 
-      <div class="space-y-2 mb-3">
+      <div class="space-y-2 mb-3 max-h-40 overflow-y-auto pr-1">
         ${currentItems.map(it => `
           <div class="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
             <div>
@@ -669,6 +660,12 @@ const FIREBASE_CONFIG = {
       </form>
     `;
 
+   const scrollTopBtn = document.getElementById("scrollTopBtn");
+    if (scrollTopBtn) {
+      scrollTopBtn.onclick = () => {
+        document.getElementById("modalBox").scrollTo({ top: 0, behavior: "smooth" });
+      };
+    } 
     content.querySelectorAll(".remove-item-btn").forEach(btn => {
       btn.onclick = () => removeItem(btn.getAttribute("data-remove"));
     });

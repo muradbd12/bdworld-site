@@ -18,6 +18,12 @@
   }
   select option { background: #101827; color: #F5F7FA; }
 </style>
+<!-- FREE DATABASE (Firebase Firestore) — optional. See the FIREBASE_CONFIG block in the
+     script below. Until you fill in your own config, the site works exactly as before
+     (orders only live in the browser for that visit). Once you add your config, orders
+     are saved permanently and the Dashboard reads real order history. -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body class="min-h-screen bg-[#0B1220] text-[#F5F7FA]">
 
@@ -171,8 +177,8 @@
       <div id="ordersList" class="text-sm text-[#8B95A5]">No order requests yet this visit — submit one from the Shop tab to see it appear here.</div>
     </div>
 
-    <p class="text-xs text-[#8B95A5] mt-6">
-      Note: this dashboard reflects only what happens in your current browser session (it resets on refresh). To keep real order history permanently, you'd need a backend/database later on.
+    <p class="text-xs text-[#8B95A5] mt-6" id="dbStatusNote">
+      Note: this dashboard reflects only what happens in your current browser session (it resets on refresh). Connect a free Firebase database (see comments in the code) to keep real order history permanently.
     </p>
   </div>
 
@@ -218,99 +224,101 @@
   ];
 
   // ---- EDIT YOUR PRODUCTS HERE ----
-  // To add a real photo for a product, add: image: "assets/product-name.jpg"
+  // To add real photos for a product, list 3 to 10 image paths in the "images" array, e.g.:
+  //   images: ["assets/products/dell-vostro-1.jpg", "assets/products/dell-vostro-2.jpg", "assets/products/dell-vostro-3.jpg"]
+  // The first image becomes the card thumbnail; clicking the product shows all of them as a gallery.
   // "details" shows in the full spec popup when someone clicks the product card.
   const PRODUCTS = [
-    { id: "p1", cat: "laptop", name: "Dell Vostro 3520 Laptop", spec: "i5 12th Gen · 8GB · 512GB SSD", price: 62500, image: null, details: {
+    { id: "p1", cat: "laptop", name: "Dell Vostro 3520 Laptop", spec: "i5 12th Gen · 8GB · 512GB SSD", price: 62500, images: [], details: {
       "Brand": "Dell", "Processor": "Intel Core i5-1235U (12th Gen)", "RAM": "8GB DDR4", "Storage": "512GB SSD",
       "Display": "15.6\" FHD", "Charger": "65W Type-C", "Graphics": "Intel Iris Xe (integrated)", "OS": "Windows 11", "Warranty": "1 Year Dell"
     }},
-    { id: "p2", cat: "laptop", name: "HP 24-inch Desktop Set", spec: "i3 12th Gen · 8GB · 1TB HDD · Monitor", price: 45000, image: null, details: {
+    { id: "p2", cat: "laptop", name: "HP 24-inch Desktop Set", spec: "i3 12th Gen · 8GB · 1TB HDD · Monitor", price: 45000, images: [], details: {
       "Brand": "HP", "Processor": "Intel Core i3-12100", "RAM": "8GB DDR4", "Storage": "1TB HDD",
       "Monitor": "24\" FHD included", "Power Supply": "250W", "Graphics": "Intel UHD 730 (integrated)", "OS": "Windows 11", "Warranty": "1 Year HP"
     }},
-    { id: "p3", cat: "laptop", name: "Lenovo IdeaPad Slim 3", spec: "Ryzen 5 · 16GB · 512GB SSD", price: 58000, image: null, details: {
+    { id: "p3", cat: "laptop", name: "Lenovo IdeaPad Slim 3", spec: "Ryzen 5 · 16GB · 512GB SSD", price: 58000, images: [], details: {
       "Brand": "Lenovo", "Processor": "AMD Ryzen 5 7530U", "RAM": "16GB DDR4", "Storage": "512GB SSD",
       "Display": "15.6\" FHD", "Charger": "65W", "Graphics": "AMD Radeon (integrated)", "OS": "Windows 11", "Warranty": "1 Year Lenovo"
     }},
-    { id: "p15", cat: "laptop", name: "Asus Vivobook 15", spec: "i5 13th Gen · 8GB · 512GB SSD", price: 64500, image: null, details: {
+    { id: "p15", cat: "laptop", name: "Asus Vivobook 15", spec: "i5 13th Gen · 8GB · 512GB SSD", price: 64500, images: [], details: {
       "Brand": "Asus", "Processor": "Intel Core i5-1334U (13th Gen)", "RAM": "8GB DDR4", "Storage": "512GB SSD",
       "Display": "15.6\" FHD", "Charger": "65W Type-C", "Graphics": "Intel Iris Xe (integrated)", "OS": "Windows 11", "Warranty": "2 Years Asus"
     }},
 
-    { id: "p4", cat: "network", name: "TP-Link Archer AX23", spec: "WiFi 6 Dual Band Router", price: 5200, image: null, details: {
+    { id: "p4", cat: "network", name: "TP-Link Archer AX23", spec: "WiFi 6 Dual Band Router", price: 5200, images: [], details: {
       "Brand": "TP-Link", "Standard": "WiFi 6 (802.11ax)", "Bands": "Dual Band AX1800", "LAN Ports": "4x Gigabit",
       "Antennas": "4 external", "Power": "12V adapter", "Warranty": "2 Years"
     }},
-    { id: "p16", cat: "network", name: "Cosco CR-N300 Router", spec: "WiFi N300 Single Band Router", price: 1750, image: null, details: {
+    { id: "p16", cat: "network", name: "Cosco CR-N300 Router", spec: "WiFi N300 Single Band Router", price: 1750, images: [], details: {
       "Brand": "Cosco", "Standard": "WiFi N (802.11n)", "Bands": "Single Band 2.4GHz, up to 300Mbps", "LAN Ports": "4x 10/100",
       "Antennas": "2 external", "Power": "9V adapter", "Warranty": "1 Year"
     }},
-    { id: "p5", cat: "network", name: "24-Port Gigabit Switch", spec: "Unmanaged, Rack Mountable", price: 8900, image: null, details: {
+    { id: "p5", cat: "network", name: "24-Port Gigabit Switch", spec: "Unmanaged, Rack Mountable", price: 8900, images: [], details: {
       "Brand": "TP-Link", "Ports": "24x Gigabit RJ45", "Type": "Unmanaged, plug and play", "Mounting": "19\" Rack mountable",
       "Power": "External adapter", "Warranty": "2 Years"
     }},
-    { id: "p17", cat: "network", name: "BDCOM 8-Port Switch", spec: "Unmanaged Desktop Switch", price: 2500, image: null, details: {
+    { id: "p17", cat: "network", name: "BDCOM 8-Port Switch", spec: "Unmanaged Desktop Switch", price: 2500, images: [], details: {
       "Brand": "BDCOM", "Ports": "8x Gigabit RJ45", "Type": "Unmanaged desktop switch", "Mounting": "Desktop / wall",
       "Power": "External adapter", "Warranty": "1 Year"
     }},
-    { id: "p6", cat: "network", name: "Cat6 Cable (305m box)", spec: "Indoor, Solid Copper", price: 4500, image: null, details: {
+    { id: "p6", cat: "network", name: "Cat6 Cable (305m box)", spec: "Indoor, Solid Copper", price: 4500, images: [], details: {
       "Brand": "Generic / Local", "Type": "Cat6 UTP, solid copper", "Length": "305 meters (1 box)", "Use": "Indoor networking",
       "Warranty": "N/A"
     }},
 
-    { id: "p7", cat: "cctv", name: "Hikvision 4-Camera Kit", spec: "2MP · Night Vision · 1TB DVR", price: 21000, image: null, details: {
+    { id: "p7", cat: "cctv", name: "Hikvision 4-Camera Kit", spec: "2MP · Night Vision · 1TB DVR", price: 21000, images: [], details: {
       "Brand": "Hikvision", "Resolution": "2MP (1080p)", "Channels": "4 cameras + DVR", "Storage": "1TB DVR included",
       "Night Vision": "up to 20m IR", "Power": "12V DC per camera", "Warranty": "1 Year"
     }},
-    { id: "p8", cat: "cctv", name: "Dahua IP Dome Camera", spec: "4MP · PoE · Weatherproof", price: 4300, image: null, details: {
+    { id: "p8", cat: "cctv", name: "Dahua IP Dome Camera", spec: "4MP · PoE · Weatherproof", price: 4300, images: [], details: {
       "Brand": "Dahua", "Resolution": "4MP", "Type": "IP camera, PoE powered", "Weatherproof": "IP67 outdoor rated",
       "Night Vision": "up to 30m IR", "Warranty": "2 Years"
     }},
-    { id: "p18", cat: "cctv", name: "CP Plus Analog Camera", spec: "5MP · Night Vision", price: 3800, image: null, details: {
+    { id: "p18", cat: "cctv", name: "CP Plus Analog Camera", spec: "5MP · Night Vision", price: 3800, images: [], details: {
       "Brand": "CP Plus", "Resolution": "5MP", "Type": "Analog (HDCVI)", "Night Vision": "up to 25m IR",
       "Power": "12V DC", "Warranty": "1 Year"
     }},
 
-    { id: "p9", cat: "printer", name: "Canon PIXMA G2020", spec: "Ink Tank · Print/Scan/Copy", price: 13500, image: null, details: {
+    { id: "p9", cat: "printer", name: "Canon PIXMA G2020", spec: "Ink Tank · Print/Scan/Copy", price: 13500, images: [], details: {
       "Brand": "Canon", "Type": "Ink Tank (refillable)", "Functions": "Print / Scan / Copy", "Print Speed": "~8.8 ipm (mono)",
       "Connectivity": "USB", "Warranty": "1 Year (2 Years on print head)"
     }},
-    { id: "p10", cat: "printer", name: "HP LaserJet Toner (85A)", spec: "Original Black Cartridge", price: 3200, image: null, details: {
+    { id: "p10", cat: "printer", name: "HP LaserJet Toner (85A)", spec: "Original Black Cartridge", price: 3200, images: [], details: {
       "Brand": "HP", "Type": "Original toner cartridge", "Page Yield": "~1,600 pages", "Compatible With": "HP LaserJet P1102 / M1132 series",
       "Warranty": "N/A"
     }},
-    { id: "p19", cat: "printer", name: "Epson L3210", spec: "Ink Tank · Print/Scan/Copy", price: 15500, image: null, details: {
+    { id: "p19", cat: "printer", name: "Epson L3210", spec: "Ink Tank · Print/Scan/Copy", price: 15500, images: [], details: {
       "Brand": "Epson", "Type": "Ink Tank (refillable)", "Functions": "Print / Scan / Copy", "Connectivity": "USB",
       "Warranty": "2 Years"
     }},
 
-    { id: "p11", cat: "gaming", name: "Redragon K552 Keyboard", spec: "Mechanical · RGB Backlit", price: 3400, image: null, details: {
+    { id: "p11", cat: "gaming", name: "Redragon K552 Keyboard", spec: "Mechanical · RGB Backlit", price: 3400, images: [], details: {
       "Brand": "Redragon", "Type": "Mechanical keyboard", "Switches": "Blue / Red (choose on order)", "Backlight": "RGB",
       "Connectivity": "USB wired", "Warranty": "1 Year"
     }},
-    { id: "p12", cat: "gaming", name: "Logitech G102 Mouse", spec: "RGB · 8000 DPI", price: 1450, image: null, details: {
+    { id: "p12", cat: "gaming", name: "Logitech G102 Mouse", spec: "RGB · 8000 DPI", price: 1450, images: [], details: {
       "Brand": "Logitech", "DPI": "Up to 8000", "Buttons": "6 programmable", "Connectivity": "USB wired", "Warranty": "1 Year"
     }},
-    { id: "p20", cat: "gaming", name: "Fantech MH85 Headset", spec: "Over-ear · Noise-cancel Mic", price: 1900, image: null, details: {
+    { id: "p20", cat: "gaming", name: "Fantech MH85 Headset", spec: "Over-ear · Noise-cancel Mic", price: 1900, images: [], details: {
       "Brand": "Fantech", "Type": "Over-ear gaming headset", "Microphone": "Noise-cancelling, detachable", "Connectivity": "3.5mm / USB",
       "Warranty": "1 Year"
     }},
 
-    { id: "p21", cat: "storage", name: "Pendrive 32GB", spec: "USB 3.0 Flash Drive", price: 650, image: null, details: {
+    { id: "p21", cat: "storage", name: "Pendrive 32GB", spec: "USB 3.0 Flash Drive", price: 650, images: [], details: {
       "Brand": "Kingston / Sandisk (stock varies)", "Capacity": "32GB", "Interface": "USB 3.0", "Read Speed": "~100MB/s", "Warranty": "5 Years"
     }},
-    { id: "p22", cat: "storage", name: "Pendrive 64GB", spec: "USB 3.0 Flash Drive", price: 950, image: null, details: {
+    { id: "p22", cat: "storage", name: "Pendrive 64GB", spec: "USB 3.0 Flash Drive", price: 950, images: [], details: {
       "Brand": "Kingston / Sandisk (stock varies)", "Capacity": "64GB", "Interface": "USB 3.0", "Read Speed": "~100MB/s", "Warranty": "5 Years"
     }},
-    { id: "p23", cat: "storage", name: "External HDD 1TB", spec: "USB 3.0 Portable Hard Drive", price: 5200, image: null, details: {
+    { id: "p23", cat: "storage", name: "External HDD 1TB", spec: "USB 3.0 Portable Hard Drive", price: 5200, images: [], details: {
       "Brand": "Toshiba / Seagate (stock varies)", "Capacity": "1TB", "Interface": "USB 3.0", "Type": "2.5\" portable", "Warranty": "3 Years"
     }},
 
-    { id: "p13", cat: "support", name: "PC Troubleshooting Visit", spec: "On-site diagnosis, per visit", price: 500, image: null, details: {
+    { id: "p13", cat: "support", name: "PC Troubleshooting Visit", spec: "On-site diagnosis, per visit", price: 500, images: [], details: {
       "Service Type": "On-site visit", "Covers": "Hardware/software diagnosis", "Duration": "Usually within 1 hour", "Warranty": "N/A"
     }},
-    { id: "p14", cat: "support", name: "Network Setup Service", spec: "Home/Office, incl. config", price: 2000, image: null, details: {
+    { id: "p14", cat: "support", name: "Network Setup Service", spec: "Home/Office, incl. config", price: 2000, images: [], details: {
       "Service Type": "On-site installation", "Covers": "Router/switch setup, WiFi configuration, cabling", "Warranty": "30 days service guarantee"
     }},
   ];
@@ -319,7 +327,54 @@
   let activeCat = "all";
   let query = "";
   let activeTab = "shop";
-  const orderRequests = []; // holds { name, phone, items, payment, total, time } submitted this session
+  const orderRequests = []; // used as a fallback when Firebase isn't configured yet
+
+  // ---- FREE DATABASE SETUP (Firebase) ----
+  // 1. Go to https://console.firebase.google.com , create a free project.
+  // 2. Inside the project, click "Firestore Database" > Create database (start in test mode).
+  // 3. Click the gear icon > Project settings > scroll to "Your apps" > add a Web app.
+  // 4. Copy the config object Firebase shows you and paste its values below, replacing the placeholders.
+  // Until you do this, FIREBASE_ENABLED stays false and the site works exactly as before (session-only).
+const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyD8ccfQgqGrz9MZGTkyB7Gn9ylRcITs4vU",
+    authDomain: "bdworld-2026.firebaseapp.com",
+    projectId: "bdworld-2026",
+    storageBucket: "bdworld-2026.firebasestorage.app",
+    messagingSenderId: "512232446538",
+    appId: "1:512232446538:web:92b98e7c1c40e8e252a4b3"
+  };
+
+  let db = null;
+  let FIREBASE_ENABLED = false;
+  try {
+    if (FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY" && typeof firebase !== "undefined") {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+      FIREBASE_ENABLED = true;
+    }
+  } catch (e) {
+    console.warn("Firebase not connected yet, running in session-only mode.", e);
+  }
+
+  async function saveOrderToDatabase(order) {
+    if (!FIREBASE_ENABLED) return;
+    try {
+      await db.collection("orders").add({ ...order, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    } catch (e) {
+      console.warn("Could not save order to database:", e);
+    }
+  }
+
+  async function loadOrdersFromDatabase() {
+    if (!FIREBASE_ENABLED) return orderRequests;
+    try {
+      const snap = await db.collection("orders").orderBy("createdAt", "desc").limit(50).get();
+      return snap.docs.map(d => d.data());
+    } catch (e) {
+      console.warn("Could not load orders from database:", e);
+      return orderRequests;
+    }
+  }
 
   // Change this passcode any time — it's just a casual gate, not real security (see note above).
   const OWNER_PASSCODE = "bdworld2026";
@@ -380,8 +435,8 @@
 
   function productImageHTML(p) {
     const c = catInfo(p.cat);
-    if (p.image) {
-      return `<img src="${p.image}" alt="${p.name}" class="w-full h-32 object-cover rounded-lg mb-3" />`;
+    if (p.images && p.images.length > 0) {
+      return `<img src="${p.images[0]}" alt="${p.name}" class="w-full h-32 object-cover rounded-lg mb-3" />`;
     }
     return `<div class="w-full h-32 rounded-lg mb-3 flex items-center justify-center text-4xl bg-gradient-to-br ${c.color} border border-white/10">${c.emoji}</div>`;
   }
@@ -440,6 +495,24 @@
   });
 
   // ---------- PRODUCT DETAILS MODAL ----------
+  function galleryHTML(product) {
+    const c = catInfo(product.cat);
+    const imgs = product.images || [];
+    if (imgs.length === 0) {
+      return `<div class="w-full h-48 rounded-lg mb-3 flex items-center justify-center text-6xl bg-gradient-to-br ${c.color} border border-white/10">${c.emoji}</div>`;
+    }
+    const mainId = "galleryMain";
+    const thumbs = imgs.map((src, i) => `
+      <button data-idx="${i}" class="gallery-thumb-btn shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 ${i === 0 ? 'border-[#2E86FF]' : 'border-white/10'}">
+        <img src="${src}" class="w-full h-full object-cover" />
+      </button>
+    `).join("");
+    return `
+      <img id="${mainId}" src="${imgs[0]}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-2" />
+      ${imgs.length > 1 ? `<div class="flex gap-2 mb-3 overflow-x-auto">${thumbs}</div>` : `<div class="mb-3"></div>`}
+    `;
+  }
+
   function openProductDetails(product) {
     const modal = document.getElementById("orderModal");
     const content = document.getElementById("modalContent");
@@ -449,6 +522,7 @@
     const others = PRODUCTS.filter(p => p.cat === product.cat && p.id !== product.id);
 
     content.innerHTML = `
+      ${galleryHTML(product)}
       <p class="text-[10px] uppercase tracking-widest text-[#8B95A5] mb-1">${catLabel(product.cat)}</p>
       <h3 class="font-display font-bold text-lg mb-1">${product.name}</h3>
       <p class="font-mono text-[#2ECC71] text-lg mb-4">${formatBDT(product.price)}</p>
@@ -477,6 +551,16 @@
       <button id="orderFromDetailsBtn" class="w-full bg-[#2E86FF] hover:bg-[#2E86FF]/85 transition rounded-lg py-2.5 text-sm font-semibold">Order This</button>
     `;
 
+    content.querySelectorAll(".gallery-thumb-btn").forEach(btn => {
+      btn.onclick = () => {
+        const idx = Number(btn.getAttribute("data-idx"));
+        document.getElementById("galleryMain").src = product.images[idx];
+        content.querySelectorAll(".gallery-thumb-btn").forEach(b => b.classList.remove("border-[#2E86FF]"));
+        content.querySelectorAll(".gallery-thumb-btn").forEach(b => b.classList.add("border-white/10"));
+        btn.classList.remove("border-white/10");
+        btn.classList.add("border-[#2E86FF]");
+      };
+    });
     content.querySelectorAll(".view-other-btn").forEach(btn => {
       btn.onclick = () => {
         const other = PRODUCTS.find(p => p.id === btn.getAttribute("data-view"));
@@ -487,33 +571,6 @@
   }
 
   // ---------- BRAND INFO MODAL (Tech / Trust / Solution) ----------
-  function openBrandInfo() {
-    const modal = document.getElementById("orderModal");
-    const content = document.getElementById("modalContent");
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
-    content.innerHTML = `
-      <h3 class="font-display font-bold text-lg mb-4">What "Tech · Trust · Solution" means</h3>
-      <div class="space-y-4">
-        <div>
-          <p class="font-semibold text-[#2E86FF] mb-1">💻 Tech</p>
-          <p class="text-sm text-[#C7CDD9]">We keep our catalog current with genuine, up-to-date IT products — laptops, networking gear, security cameras and more — so you always get equipment that fits today's needs.</p>
-        </div>
-        <div>
-          <p class="font-semibold text-[#2ECC71] mb-1">🛡️ Trust</p>
-          <p class="text-sm text-[#C7CDD9]">Every product comes from verified brands with clear warranty terms and honest, upfront pricing — no hidden charges, no surprises after you order.</p>
-        </div>
-        <div>
-          <p class="font-semibold text-[#E63946] mb-1">🔧 Solution</p>
-          <p class="text-sm text-[#C7CDD9]">We don't just sell products — we help set them up. From network installation to on-site troubleshooting, we support you before and after the purchase.</p>
-        </div>
-      </div>
-      <button onclick="closeModal()" class="w-full mt-6 text-sm px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 transition">Close</button>
-    `;
-  }
-  document.getElementById("brandInfoBtn").onclick = openBrandInfo;
-
-  // ---------- BRAND INFO MODAL ----------
   document.getElementById("brandInfoBtn").onclick = () => {
     const modal = document.getElementById("brandModal");
     modal.classList.remove("hidden");
@@ -628,6 +685,7 @@
       const itemNames = currentItems.map(it => it.name);
       const total = itemsTotal();
       orderRequests.unshift({ name, phone, payment, items: itemNames, total, time: new Date().toLocaleTimeString() });
+      saveOrderToDatabase({ name, phone, payment, items: itemNames, total, time: new Date().toLocaleTimeString() });
 
       const itemsLines = currentItems.map(it => `${it.name} (${formatBDT(it.price)})`).join("%0A- ");
       const orderText = `New order from BD World website:%0A- ${itemsLines}%0ATotal: ${encodeURIComponent(formatBDT(total))}%0APayment: ${encodeURIComponent(payment)}%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}`;
@@ -661,10 +719,9 @@
   });
 
   // ---------- DASHBOARD RENDERING ----------
-  function renderDashboard() {
+  async function renderDashboard() {
     document.getElementById("statProducts").textContent = PRODUCTS.length;
     document.getElementById("statCategories").textContent = CATEGORIES.length;
-    document.getElementById("statOrders").textContent = orderRequests.length;
     const avg = PRODUCTS.reduce((sum, p) => sum + p.price, 0) / PRODUCTS.length;
     document.getElementById("statAvgPrice").textContent = formatBDT(Math.round(avg));
 
@@ -705,8 +762,18 @@
     });
 
     const ordersList = document.getElementById("ordersList");
-    if (orderRequests.length === 0) {
-      ordersList.textContent = "No order requests yet this visit — submit one from the Shop tab to see it appear here.";
+    ordersList.textContent = "Loading order history...";
+    const orders = await loadOrdersFromDatabase();
+    document.getElementById("statOrders").textContent = orders.length;
+    const dbNote = document.getElementById("dbStatusNote");
+    dbNote.textContent = FIREBASE_ENABLED
+      ? "✅ Connected to Firebase — order history is saved permanently and will still be here after a refresh or on another device."
+      : "Note: this dashboard reflects only what happens in your current browser session (it resets on refresh). Connect a free Firebase database (see comments in the code) to keep real order history permanently.";
+
+    if (orders.length === 0) {
+      ordersList.textContent = FIREBASE_ENABLED
+        ? "No orders yet. Once a customer submits one, it will appear here permanently."
+        : "No order requests yet this visit — submit one from the Shop tab to see it appear here. (Connect Firebase to keep this history permanently across visits.)";
     } else {
       ordersList.innerHTML = `
         <table class="w-full text-sm">
@@ -714,7 +781,7 @@
             <tr><th class="text-left pb-2">Time</th><th class="text-left pb-2">Name</th><th class="text-left pb-2">Phone</th><th class="text-left pb-2">Items</th><th class="text-left pb-2">Payment</th><th class="text-left pb-2">Total</th></tr>
           </thead>
           <tbody>
-            ${orderRequests.map(o => `
+            ${orders.map(o => `
               <tr class="border-t border-white/10 align-top">
                 <td class="py-2 text-[#8B95A5] whitespace-nowrap">${o.time}</td>
                 <td class="py-2">${o.name}</td>

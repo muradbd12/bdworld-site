@@ -76,7 +76,17 @@
 <p class="relative text-center w-full text-[#8B95A5] text-sm">Laptops, networking gear, CCTV, printers, gaming accessories and IT support, all with real prices.</p>
       </div>
     </section>
-
+<!-- Order Tracking System -->
+    <section class="max-w-6xl mx-auto px-5 pt-6">
+        <div class="bg-[#0f172a] border border-white/10 rounded-2xl p-6 shadow-lg">
+            <h2 class="text-white text-lg font-semibold mb-3">Track Your Order</h2>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="text" id="trackPhone" placeholder="Enter your phone number..." class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-[#2ECC71]">
+                <button onclick="checkOrderStatus()" class="bg-[#2ECC71] text-black font-bold px-6 py-2 rounded-lg hover:bg-[#27ae60] transition">Check Status</button>
+            </div>
+            <div id="trackResult" class="mt-4 hidden"></div>
+        </div>
+    </section>
     <!-- Mobile search -->
     <section class="max-w-6xl mx-auto px-5 pt-4 sm:hidden">
       <div class="relative">
@@ -375,7 +385,7 @@ const FIREBASE_CONFIG = {
     if (!FIREBASE_ENABLED) return orderRequests;
     try {
       const snap = await db.collection("orders").orderBy("createdAt", "desc").limit(50).get();
-      return snap.docs.map(d => d.data());
+     return snap.docs.map(d => ({ ...d.data(), id: d.id }));
     } catch (e) {
       console.warn("Could not load orders from database:", e);
       return orderRequests;
@@ -811,17 +821,13 @@ const FIREBASE_CONFIG = {
 <script>
     async function confirmOrderAdmin(orderId) {
         try {
-            if(!db) {
-                alert("Database not connected!");
-                return;
-            }
-            await db.collection("orderRequests").doc(orderId).update({
+            await db.collection("orders").doc(orderId).update({
                 status: "confirmed"
             });
             alert("Order confirmed successfully!");
             location.reload();
         } catch (error) {
-            alert("Error details: " + error.message);
+            alert("System Error: " + error.message);
         }
     }
 
@@ -852,6 +858,49 @@ const FIREBASE_CONFIG = {
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
         html2pdf().set(opt).from(element).save();
+    }
+   async function checkOrderStatus() {
+        const phone = document.getElementById("trackPhone").value.trim();
+        const resultDiv = document.getElementById("trackResult");
+        
+        if (!phone) {
+            alert("Please enter your phone number.");
+            return;
+        }
+        
+        resultDiv.innerHTML = '<p style="color: white;">Searching...</p>';
+        resultDiv.classList.remove("hidden");
+        
+        try {
+            if(!db) return;
+            const snapshot = await db.collection("orders").where("phone", "==", phone).get();
+            
+            if (snapshot.empty) {
+                resultDiv.innerHTML = '<p style="color: #F87171;">No order found with this phone number.</p>';
+                return;
+            }
+            
+            let html = '';
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const isConfirmed = data.status === 'confirmed';
+                const itemsList = Array.isArray(data.items) ? data.items.join(', ') : data.items;
+                
+                html += `
+                    <div style="margin-top: 15px; padding: 15px; border-radius: 8px; border: 1px solid ${isConfirmed ? '#2ECC71' : '#F59E0B'}; background: rgba(255,255,255,0.05);">
+                        <p style="color: white; margin-bottom: 10px;"><strong>Status:</strong> <span style="color: ${isConfirmed ? '#2ECC71' : '#F59E0B'}; font-weight: bold;">${isConfirmed ? 'Confirmed' : 'Pending (Processing)'}</span></p>
+                        <p style="color: #94A3B8; font-size: 14px; margin-bottom: 15px;"><strong>Items:</strong> ${itemsList}</p>
+                        ${isConfirmed ? `<button onclick="downloadOrderAdmin('${doc.id}', '${data.name || ''} - ${data.phone}', '${itemsList}')" style="background: rgba(46, 204, 113, 0.2); color: #2ECC71; border: 1px solid rgba(46, 204, 113, 0.5); padding: 8px 16px; border-radius: 5px; font-weight: bold; cursor: pointer;">Download Invoice</button>` : ''}
+                    </div>
+                `;
+            });
+            
+            resultDiv.innerHTML = html;
+            
+        } catch (error) {
+            console.error(error);
+            resultDiv.innerHTML = '<p style="color: #F87171;">Error checking status. Please try again.</p>';
+        }
     }
 </script>
 </body>

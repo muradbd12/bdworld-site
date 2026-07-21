@@ -41,13 +41,31 @@
   <!-- Header -->
   <header class="border-b border-white/10 sticky top-0 z-30 bg-[#0B1220]/95 backdrop-blur">
     <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
-      <div class="flex items-baseline gap-2">
-        <span class="brand-reflect font-display font-bold text-3xl sm:text-4xl tracking-tight">
-          <span class="text-[#E63946]">BD</span>
-          <span class="text-[#2E86FF]">WORLD</span>
-        </span>
-        <button id="brandInfoBtn" class="hidden sm:inline text-[10px] uppercase tracking-widest text-[#8B95A5] hover:text-white transition underline decoration-dotted underline-offset-4">Tech · Trust · Solution</button>
-      </div>
+      <!-- Main Logo Section (Not a link anymore) -->
+<div class="flex flex-col items-center justify-center w-fit select-none">
+    
+    <!-- Main Logo Text -->
+    <div class="text-3xl sm:text-4xl font-extrabold tracking-wider font-display" style="text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+        <span class="text-[#FF0000]">BD</span>
+        <span class="text-[#0099FF] ml-1">WORLD</span>
+    </div>
+
+    <!-- Tagline (Tech - Trust - Solution) Buttons -->
+    <div class="flex items-center gap-1.5 mt-1 text-[10px] sm:text-xs font-bold tracking-widest uppercase">
+        <span class="w-5 h-[2px] bg-[#FF0000]"></span> <!-- Left Red Line -->
+        
+        <button onclick="showMeaning('tech')" class="text-[#FF0000] hover:scale-110 transition-transform cursor-pointer focus:outline-none" title="Click to see meaning">Tech</button>
+        <span class="text-white text-[10px] opacity-70">•</span>
+        
+        <button onclick="showMeaning('trust')" class="text-[#00FF00] hover:scale-110 transition-transform cursor-pointer focus:outline-none" title="Click to see meaning">Trust</button>
+        <span class="text-white text-[10px] opacity-70">•</span>
+        
+        <button onclick="showMeaning('solution')" class="text-[#0099FF] hover:scale-110 transition-transform cursor-pointer focus:outline-none" title="Click to see meaning">Solution</button>
+        
+        <span class="w-5 h-[2px] bg-[#00FF00]"></span> <!-- Right Green Line -->
+    </div>
+</div>
+<button id="brandInfoBtn" class="hidden"></button>
       <div class="relative w-full max-w-md hidden sm:block" id="searchWrap">
         <input id="searchInput" type="text" placeholder="Search products, e.g. router, toner, keyboard..."
           class="w-full bg-white/5 border border-white/10 rounded-full pl-9 pr-4 py-2 text-sm outline-none focus:border-[#2E86FF] focus:ring-1 focus:ring-[#2E86FF] transition" />
@@ -227,7 +245,14 @@
       <div id="modalContent"></div>
     </div>
   </div>
-
+<!-- Meaning Pop-up Modal -->
+<div id="meaningModal" class="fixed inset-0 z-50 hidden flex-col items-center justify-center bg-black/80 backdrop-blur-sm px-4 transition-opacity">
+    <div class="bg-[#0f172a] border border-white/20 rounded-xl p-6 max-w-sm w-full shadow-2xl text-center">
+        <h3 id="modalTitle" class="text-2xl font-bold mb-3 tracking-wider">Title</h3>
+        <p id="modalDesc" class="text-gray-300 text-sm leading-relaxed mb-6">Description goes here.</p>
+        <button onclick="closeMeaning()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition-colors border border-gray-500">Close / বন্ধ করুন</button>
+    </div>
+</div>
 <script>
   const CATEGORIES = [
     { id: "laptop", label: "Laptop & Desktop", emoji: "💻", color: "from-[#2E86FF]/30 to-[#2E86FF]/5" },
@@ -812,7 +837,32 @@ const FIREBASE_CONFIG = {
       `;
     }
   }
+// Tech, Trust, Solution Meaning Pop-up Logic
+function showMeaning(word) {
+    const modal = document.getElementById('meaningModal');
+    const title = document.getElementById('modalTitle');
+    const desc = document.getElementById('modalDesc');
 
+    if (word === 'tech') {
+        title.innerHTML = '<span class="text-[#FF0000]">TECH</span>';
+        desc.innerHTML = "We provide the best and most reliable <b>Technology</b> products. From laptops to modern gadgets, find everything you need here.";
+    } else if (word === 'trust') {
+        title.innerHTML = '<span class="text-[#00FF00]">TRUST</span>';
+        desc.innerHTML = "Your <b>Trust</b> is our biggest achievement. We guarantee 100% original products, proper warranty, and secure shopping.";
+    } else if (word === 'solution') {
+        title.innerHTML = '<span class="text-[#0099FF]">SOLUTION</span>';
+        desc.innerHTML = "We don't just sell products; our expert team is always ready to provide the perfect <b>Solution</b> for any of your IT problems.";
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeMeaning() {
+    const modal = document.getElementById('meaningModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
   // ---------- INIT ----------
   setTab("shop");
   renderShop();

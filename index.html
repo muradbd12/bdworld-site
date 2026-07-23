@@ -720,10 +720,10 @@ const FIREBASE_CONFIG = {
       const name = document.getElementById("custName").value;
       const phone = document.getElementById("custPhone").value;
       const payment = document.getElementById("custPayment").value;
-      const itemNames = currentItems.map(it => it.name);
+      const itemsData = currentItems.map(it => ({ name: it.name, price: it.price }));
       const total = itemsTotal();
-      orderRequests.unshift({ name, phone, payment, items: itemNames, total, time: new Date().toLocaleTimeString() });
-      saveOrderToDatabase({ name, phone, payment, items: itemNames, total, time: new Date().toLocaleTimeString() });
+      orderRequests.unshift({ name, phone, payment, items: itemsData, total, time: new Date().toLocaleTimeString() });
+      saveOrderToDatabase({ name, phone, payment, items: itemsData, total, time: new Date().toLocaleTimeString() });
 
       const itemsLines = currentItems.map(it => `${it.name} (${formatBDT(it.price)})`).join("%0A- ");
       const orderText = `New order from BD World website:%0A- ${itemsLines}%0ATotal: ${encodeURIComponent(formatBDT(total))}%0APayment: ${encodeURIComponent(payment)}%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}`;
@@ -802,6 +802,7 @@ const FIREBASE_CONFIG = {
     const ordersList = document.getElementById("ordersList");
     ordersList.textContent = "Loading order history...";
     const orders = await loadOrdersFromDatabase();
+    window.lastLoadedOrders = orders;
     document.getElementById("statOrders").textContent = orders.length;
     const dbNote = document.getElementById("dbStatusNote");
     dbNote.textContent = FIREBASE_ENABLED
@@ -824,11 +825,11 @@ const FIREBASE_CONFIG = {
                 <td class="py-2 text-[#8B95A5] whitespace-nowrap">${o.time}</td>
                 <td class="py-2">${o.name}</td>
                 <td class="py-2">${o.phone}</td>
-                <td class="py-2">${o.items.join(", ")}</td>
+                <td class="py-2">${o.items.map(i => typeof i === 'string' ? i : i.name).join(", ")}</td>
                 <td class="py-2 text-[#8B95A5] whitespace-nowrap">${o.payment || "-"}</td>
                 <td class="py-2 font-mono text-[#2ECC71] whitespace-nowrap">${formatBDT(o.total)}</td>
                 <td class="py-2 text-right">
-    ${o.status === 'confirmed' ? `<button onclick="downloadOrderAdmin('${o.id}', '${o.name || ''} - ${o.phone || ''}', '${Array.isArray(o.items) ? o.items.join(', ') : o.items}')" class="bg-[#2ECC71]/20 text-[#2ECC71] border border-[#2ECC71]/50 px-3 py-1 rounded text-xs mr-2">Download</button><span class="text-[#2ECC71] text-xs px-2 py-1 rounded border border-[#2ECC71]">Confirmed</span>` : `<button onclick="confirmOrderAdmin('${o.id}')" class="bg-[#3B82F6]/20 text-[#3B82F6] border border-[#3B82F6]/50 px-3 py-1 rounded text-xs">Confirm</button>`}
+    ${o.status === 'confirmed' ? `<button onclick="downloadOrderAdmin('${o.id}')" class="bg-[#2ECC71]/20 text-[#2ECC71] border border-[#2ECC71]/50 px-3 py-1 rounded text-xs mr-2">Download</button><span class="text-[#2ECC71] text-xs px-2 py-1 rounded border border-[#2ECC71]">Confirmed</span>` : `<button onclick="confirmOrderAdmin('${o.id}')" class="bg-[#3B82F6]/20 text-[#3B82F6] border border-[#3B82F6]/50 px-3 py-1 rounded text-xs">Confirm</button>`}
 </td>
               </tr>
             `).join("")}
@@ -881,34 +882,268 @@ function closeMeaning() {
         }
     }
 
-    function downloadOrderAdmin(orderId, customerInfo, itemsStr) {
-        const element = document.createElement("div");
-        element.innerHTML = `
-            <div style="padding: 40px; font-family: sans-serif; color: #1a1a1a; background: #fff;">
-                <h1 style="color: #2ECC71; margin-bottom: 5px; text-align: center; font-weight: bold;">BD WORLD</h1>
-                <p style="text-align: center; margin-top: 0; color: #666; font-size: 14px;">IT Accessories & Solutions</p>
-                <hr style="border: 1px solid #eee; margin: 20px 0;">
-                <h3 style="margin-bottom: 20px;">Order Invoice</h3>
-                <p style="margin-bottom: 8px;"><strong>Order ID:</strong> ${orderId}</p>
-                <p style="margin-bottom: 8px;"><strong>Customer Info:</strong> ${customerInfo}</p>
-                <p style="margin-bottom: 20px;"><strong>Status:</strong> <span style="color: #2ECC71;">Confirmed</span></p>
-                <div style="padding: 15px; background: #f9f9f9; border-radius: 5px; border: 1px solid #eee;">
-                    <strong style="display: block; margin-bottom: 10px;">Ordered Items:</strong>
-                    <p style="line-height: 1.6;">${itemsStr}</p>
-                </div>
-                <hr style="border: 1px solid #eee; margin: 40px 0 20px 0;">
-                <p style="text-align: center; font-size: 12px; color: #888;">Thank you for shopping with BD WORLD!</p>
-            </div>
-        `;
-        const opt = {
-            margin: 0.5,
-            filename: 'BD_World_Invoice_' + orderId + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
+      async function downloadOrderAdmin(orderId) {
+    let order = (window.lastLoadedOrders || []).find(o => o.id === orderId);
+    
+    if (!order && typeof db !== "undefined") {
+        try {
+            const docRef = await db.collection("orders").doc(orderId).get();
+            if (docRef.exists) {
+                order = { id: docRef.id, ...docRef.data() };
+            }
+        } catch(e) {
+            console.error(e);
+        }
     }
+
+    if (!order) { 
+        alert("Could not find this order's details. Please open the Dashboard tab first."); 
+        return; 
+    }
+
+    const invoiceNo = "BDW-" + orderId.slice(-6).toUpperCase();
+    const invoiceDate = new Date().toLocaleDateString('en-GB');
+    const fmt = n => "৳" + Number(n).toLocaleString("en-BD");
+
+    const itemRows = (order.items || []).map((it, idx) => {
+        const name = typeof it === "string" ? it : it.name;
+        const price = typeof it === "string" ? 0 : it.price;
+        const bg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+        return `
+            <tr>
+                <td style="background-color: ${bg}; padding: 12px 15px; text-align: center; color: #475569; border: 1px solid #e2e8f0;">${String(idx + 1).padStart(2, "0")}</td>
+                <td style="background-color: ${bg}; padding: 12px 15px; font-weight: bold; color: #0f172a; border: 1px solid #e2e8f0;">${name}</td>
+                <td style="background-color: ${bg}; padding: 12px 15px; text-align: center; color: #475569; border: 1px solid #e2e8f0;">1</td>
+                <td style="background-color: ${bg}; padding: 12px 15px; text-align: right; color: #475569; border: 1px solid #e2e8f0;">${price ? fmt(price) : "-"}</td>
+                <td style="background-color: ${bg}; padding: 12px 15px; text-align: right; color: #0f172a; font-weight: bold; border: 1px solid #e2e8f0;">${price ? fmt(price) : "-"}</td>
+            </tr>
+        `;
+    }).join("");
+
+    const pdfHTML = `
+        <div id="pdfInvoiceTarget" style="width: 800px; height: 1131px; background-color: #ffffff; font-family: 'Arial', sans-serif; color: #000000; box-sizing: border-box; position: relative;">
+            
+            <div style="padding: 55px 50px 20px 50px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
+                <tr>
+                    <td width="50%" valign="top">
+                        <table cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td valign="middle" style="padding-right: 12px;">
+                                    <div style="width: 60px; height: 60px; background: #030b17; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 26px; letter-spacing: 1px;">
+                                        <span style="color: #FF0000;">B</span><span style="color: #0099FF;">D</span>
+                                    </div>
+                                </td>
+                                <td valign="middle">
+                                    <div style="font-size: 38px; font-weight: 900; line-height: 1; letter-spacing: 1px;">
+                                        <span style="color: #FF0000;">BD</span> <span style="color: #0099FF;">WORLD</span>
+                                    </div>
+                                    <div style="font-size: 10px; letter-spacing: 2px; font-weight: bold; color: #475569; margin-top: 5px;">
+                                        <span style="color: #FF0000;">TECH</span> &bull; <span style="color: #00FF00;">TRUST</span> &bull; <span style="color: #0099FF;">SOLUTION</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="50%" valign="top" align="right">
+                        <div style="font-size: 45px; font-weight: 900; color: #0f172a; letter-spacing: 2px; margin-bottom: 10px; line-height: 1;">INVOICE</div>
+                        <div style="font-size: 13px; color: #475569; line-height: 1.8;">
+                            <strong>Invoice No:</strong> <span style="color: #0f172a;">${invoiceNo}</span><br>
+                            <strong>Invoice Date:</strong> <span style="color: #0f172a;">${invoiceDate}</span><br>
+                            <strong>Due Date:</strong> <span style="color: #0f172a;">On Delivery</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            </div>
+
+            <div style="padding: 0 50px; margin-bottom: 30px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td width="48%" valign="top" style="background-color: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <div style="background-color: #092c6c; color: #ffffff; padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; margin-bottom: 12px; letter-spacing: 1px;">
+                            FROM
+                        </div>
+                        <div style="font-size: 17px; font-weight: bold; color: #0f172a; margin-bottom: 8px;">Mosharraf Hossain Murad</div>
+                        <div style="font-size: 13px; color: #475569; line-height: 1.7;">
+                            📞 01824-539680 | 01521-486882<br>
+                            ✉️ mosharrafhossain012@gmail.com<br>
+                            📍 Green view, Road 09, Halishahar,<br>Chattogram, Bangladesh
+                        </div>
+                    </td>
+                    <td width="4%"></td>
+                    <td width="48%" valign="top" style="background-color: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <div style="background-color: #092c6c; color: #ffffff; padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; margin-bottom: 12px; letter-spacing: 1px;">
+                            BILL TO
+                        </div>
+                        <div style="font-size: 17px; font-weight: bold; color: #0f172a; margin-bottom: 8px;">${order.name || "Customer"}</div>
+                        <div style="font-size: 13px; color: #475569; line-height: 1.7;">
+                            📞 ${order.phone || "N/A"}<br>
+                            <strong>Payment:</strong> ${order.payment || "N/A"}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            </div>
+
+            <div style="padding: 0 50px; margin-bottom: 40px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="color: #ffffff; font-weight: bold; font-size: 12px;">
+                            <th width="10%" style="background-color: #cc0000; padding: 15px; text-align: center; border: 1px solid #cc0000;">NO.</th>
+                            <th width="45%" style="background-color: #030b17; padding: 15px; border: 1px solid #030b17;">DESCRIPTION</th>
+                            <th width="10%" style="background-color: #030b17; padding: 15px; text-align: center; border: 1px solid #030b17;">QTY</th>
+                            <th width="15%" style="background-color: #030b17; padding: 15px; text-align: right; border: 1px solid #030b17;">UNIT PRICE</th>
+                            <th width="20%" style="background-color: #0055ff; padding: 15px; text-align: right; border: 1px solid #0055ff;">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemRows}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="padding: 0 50px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td width="55%" valign="top" style="padding-right: 20px;">
+                        <div style="font-size: 14px; font-weight: bold; color: #092c6c; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">PAYMENT INFORMATION</div>
+                        <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; line-height: 2.2; color: #475569;">
+                            <tr><td width="120">Payment Method</td><td>: <strong style="color: #0f172a;">${order.payment || "Cash on Delivery"}</strong></td></tr>
+                        </table>
+
+                        <div style="font-size: 14px; font-weight: bold; color: #092c6c; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">TERMS & CONDITION</div>
+                        <div style="font-size: 11px; color: #64748b; line-height: 1.6;">
+                            1. All products come with official brand warranty.<br>
+                            2. Goods once sold can only be returned per our policy.
+                        </div>
+                    </td>
+                    <td width="45%" valign="top">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px; border: 1px solid #e2e8f0; margin-bottom: 40px;">
+                            <tr>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; color: #475569;">Subtotal</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: bold; color: #0f172a;">${fmt(order.total)}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; color: #475569;">Tax (0%)</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: bold; color: #0f172a;">৳0</td>
+                            </tr>
+                            <tr style="background-color: #0f172a; color: #ffffff;">
+                                <td style="padding: 18px 15px; font-weight: bold; font-size: 15px;">GRAND TOTAL</td>
+                                <td style="padding: 18px 15px; text-align: right; font-weight: bold; font-size: 15px;">${fmt(order.total)}</td>
+                            </tr>
+                        </table>
+
+                        <div style="text-align: center;">
+                            <div style="font-family: 'Times New Roman', serif; font-style: italic; font-size: 26px; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px; display: inline-block; width: 80%;">
+                                Mosharraf Hossain Murad
+                            </div>
+                            <div style="font-size: 12px; font-weight: bold; color: #092c6c; margin-top: 8px;">Authorized Signature</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            </div>
+
+            <div style="position: absolute; bottom: 0; left: 0; width: 100%; background-color: #030b17; color: #ffffff; padding: 25px 50px; box-sizing: border-box;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="55%" valign="middle" style="font-size: 12px; line-height: 1.8; color: #cbd5e1;">
+                            📞 <span style="color: #ffffff;">01824539680 | 01521486882</span><br>
+                            ✉️ <span style="color: #ffffff;">mosharrafhossain012@gmail.com</span><br>
+                            🌐 <span style="color: #ffffff;">www.bdworld.com</span><br>
+                            📍 <span style="color: #ffffff;">Green view, Road 09, Halishahar, Chattogram</span>
+                        </td>
+                        <td width="15%" valign="middle" align="center">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent("https://wa.me/8801521486882")}" style="width:70px; height:70px; background:#fff; padding:4px; border-radius:4px;" />
+                        </td>
+                        <td width="30%" valign="middle" align="right">
+                            <div style="font-size: 26px; font-weight: 900; letter-spacing: 2px;">
+                                <span style="color: #FF0000;">BD</span> <span style="color: #0099FF;">WORLD</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    `;
+
+    const modal = document.getElementById("orderModal");
+    const content = document.getElementById("modalContent");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    
+    content.innerHTML = `
+        <div id="pdfPreviewOuter" style="max-height: 60vh; overflow: hidden; border: 1px solid #333; border-radius: 8px; margin-bottom: 16px; background: #e5e7eb; display: flex; justify-content: center;">
+            <div id="pdfPreviewScaler" style="transform: scale(0.38); transform-origin: top center; width: 800px; margin-bottom: -680px;">
+                ${pdfHTML}
+            </div>
+        </div>
+        <button id="confirmDownloadBtn" class="w-full bg-[#2E86FF] hover:bg-[#2E86FF]/85 text-white transition rounded-lg py-2.5 text-sm font-semibold mb-2">📥 Download PDF</button>
+        <button onclick="closeModal()" class="w-full text-sm px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/15 transition">Close</button>
+    `;
+
+    document.getElementById("confirmDownloadBtn").onclick = function() {
+        const btn = this;
+        btn.innerHTML = "⏳ Generating PDF... Please wait";
+        btn.style.opacity = "0.7";
+        btn.style.pointerEvents = "none";
+
+        // Capture the EXACT same node the preview already renders correctly —
+        // just temporarily un-scale it (off-screen, full size) instead of building
+        // a separate hidden copy. This avoids any windowWidth/scroll mismatch.
+        const scaler = document.getElementById("pdfPreviewScaler");
+        const targetNode = document.getElementById("pdfInvoiceTarget");
+        const originalParent = scaler.parentNode;
+        const originalNextSibling = scaler.nextSibling;
+
+        scaler.style.transform = "none";
+        scaler.style.position = "fixed";
+        scaler.style.top = "0";
+        scaler.style.left = "0";
+        scaler.style.zIndex = "-9999";
+        scaler.style.margin = "0";
+        document.body.appendChild(scaler);
+        window.scrollTo(0, 0);
+
+        const opt = {
+            margin: 0,
+            filename: "BD_World_Invoice_" + invoiceNo + ".pdf",
+            image: { type: "jpeg", quality: 1.0 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                scrollX: 0,
+                scrollY: 0
+            },
+            jsPDF: { unit: "px", format: [800, 1131], orientation: "portrait" }
+        };
+
+        function restoreScaler() {
+            scaler.style.transform = "scale(0.38)";
+            scaler.style.transformOrigin = "top center";
+            scaler.style.position = "static";
+            scaler.style.zIndex = "auto";
+            scaler.style.marginBottom = "-680px";
+            originalParent.insertBefore(scaler, originalNextSibling);
+        }
+
+        // Give the browser time to apply the full-size layout before capturing
+        setTimeout(() => {
+            html2pdf().set(opt).from(targetNode).save().then(() => {
+                restoreScaler();
+                closeModal();
+            }).catch(err => {
+                console.error(err);
+                alert("Error generating PDF.");
+                restoreScaler();
+                btn.innerHTML = "📥 Download PDF";
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
+            });
+        }, 500);
+    };
+}
    async function checkOrderStatus() {
         const phone = document.getElementById("trackPhone").value.trim();
         const resultDiv = document.getElementById("trackResult");
